@@ -36,17 +36,15 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
             headerName: 'Name', 
             flex: 3,
             valueGetter: (params) => 
-                `${getFName(params.row.Key)}`
+                `${params.row.gran_id}`
         },
         {
             field: 'fileType',
             headerName: 'File Type',
             flex: 0.5,
-            valueGetter: (params) => `${getFType(params.row.Key)}`
+            valueGetter: (params) => `${params.row.file_type}`
         },
-        {field: 'LastModified', headerName: 'Last Modified', flex: 2, type: 'dateTime',
-            valueGetter: ({value}) => value && new Date(value)},
-        {field: 'Size', headerName: 'Size', flex: 1, valueGetter: (params) => `${getFSize(params.row.Size)}`},
+        {field: 'Size', headerName: 'Size', flex: 1, valueGetter: (params) => `${params.row.file_size}`},
     ]
 
 
@@ -92,15 +90,14 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
         //process the response from the api call into an array of objects
         //for use in the data grid
         const xml = resp
+        console.log(resp)
         const json = parser.parse(xml)
         if(delim === '/'){
             const jResp = json['ListBucketResult']['CommonPrefixes']
             setResponse(validateResponse(jResp))
-            setSkipTrue()
+            setSkipTrue(json)
         } else {
-            const jResp = json['ListBucketResult']['Contents']
-            const filtered = validateResponse(jResp)
-            setResponse(filtered)
+            setResponse(xml)
             setSkipTrue()
        }
     }
@@ -203,12 +200,12 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
             columns={delim === '/'? fileColumns: granColumns}
             rowsPerPageOptions={[10, 25, 50, 100]}
             checkboxSelection= {delim === '/' ? false : true}
-            getRowId={row => delim === '/'? row.Prefix: row.Key}
+            getRowId={row => delim === '/'? row.Prefix: row.uri}
             onSelectionModelChange={(id) => {
                 {/*handles the selction of rows*/}
                 const selectedIDs = new Set(id)
                 const selectedRowData = response.filter((row) =>
-                selectedIDs.has(delim === '/'? row.Prefix: row.Key))
+                selectedIDs.has(delim === '/'? row.Prefix: row.uri))
                 dispatch(setSelectedList(selectedRowData))
             }}
             onCellDoubleClick={(row) => {handleCellDoubleClick(row['id'])}} 

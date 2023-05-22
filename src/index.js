@@ -8,23 +8,29 @@ import App from './App'
 import store from './app/store'
 import { Footer } from './components/universal/Footer';
 import PageNotFound from './pages/PageNotFound';
+import { Helmet } from 'react-helmet';
 import config from './config'
+const baseUrl = process.env.REACT_APP_BASE_URL || '/';
+
 
 const root = createRoot(document.getElementById('root'))
 
 root.render(
     <React.StrictMode>
+        <Helmet>
+            {baseUrl && <base href={baseUrl} />}
+        </Helmet>
         <Provider store={store}>
-        <div className="app">
-            <header>
-                <CssBaseline />
-                <TopBar />
-            </header>
-            <main>
+            <div className="app">
+                <header>
+                    <CssBaseline />
+                    <TopBar />
+                </header>
+                <main>
 
             <BrowserRouter>
                 <Routes>
-                    <Route path='/' element={<App />} />
+                    <Route path='*' element={<App />} />
                     <Route path='/browseui/404' element={<PageNotFound />} />
                 </Routes>
             </BrowserRouter>

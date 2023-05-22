@@ -8,7 +8,7 @@ import App from './App'
 import store from './app/store'
 import { Footer } from './components/universal/Footer';
 import PageNotFound from './pages/PageNotFound';
-
+import config from './config'
 
 const root = createRoot(document.getElementById('root'))
 
@@ -29,6 +29,7 @@ root.render(
                 </Routes>
             </BrowserRouter>
             </main>
+            <span style={{'text-align': 'right', 'margin-right':'30px'}}> {config.version}</span>
             <footer>
             <Footer />
             </footer>

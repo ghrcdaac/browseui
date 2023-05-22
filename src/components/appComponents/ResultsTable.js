@@ -1,5 +1,5 @@
 import { DataGrid, gridClasses } from '@mui/x-data-grid'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState , useRef} from 'react'
 import { useGetGranSearchQuery } from '../../feature/api/apiSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { XMLParser } from 'fast-xml-parser'
@@ -11,13 +11,14 @@ import { isImage } from '../../lib/isImage'
 import { alpha, Backdrop } from '@mui/material'
 import config from '../../config'
 import { useHref } from 'react-router-dom'
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 import '../../App.css'
-import FileViewer from 'react-file-viewer';
 import TextFileViewer from "./TextFileViewer";
 import printJS from 'print-js';
 import {FaDownload, FaPrint, FaArrowLeft, FaArrowRight, FaTimes} from "react-icons/fa";
-
+import {BiZoomIn, BiZoomOut} from "react-icons/bi"
+import {TbZoomReset} from "react-icons/tb"
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import * as pdfjs from "pdfjs-dist";
@@ -25,7 +26,6 @@ import { toolbarPlugin, ToolbarSlot } from '@react-pdf-viewer/toolbar';
 
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-
 
 
 //**********variable and class delarations**********/
@@ -48,6 +48,9 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
     const [sortedData, setSortedData] = useState([]);
     const [showArrow, setShowArrow] = useState(true);
     const [sortOrder, setSortOrder] = useState('asc')
+    const transformComponentRef = useRef(null);
+    const [scale, setScale] = useState(1);
+
     //*********************table Layout **************** */
     const granColumns = [
         //columbs layout for when granules are returned
@@ -203,6 +206,8 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
 
 
     const handleCellDoubleClick  = (id) => {
+        //To set the next image to original size
+        setScale(1);
         // File preview
         setFilePath(`${config.cloudWatchUrlBase}${id}`, ()=>{
             setImg(id)
@@ -229,6 +234,8 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
     }
 
     const handleNavigationClick = (img, direction) => {
+        //To set the next image to original size
+        setScale(1);
         const currentImageIndex = response.findIndex((row2) => row2.Key === img);
         if(direction === 'left'){
             if(currentImageIndex > 0){
@@ -333,6 +340,33 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
         }
     };
 
+    const handleZoomIn = () => {
+        const { current: transformComponent } = transformComponentRef;
+        if (transformComponent) {
+            const { zoomIn, zoomReset } = transformComponent;
+           // zoomIn();
+            setScale((prevScale) => prevScale + 0.1);
+        }
+    };
+
+    const handleZoomOut = () => {
+        const { current: transformComponent } = transformComponentRef;
+        if (transformComponent) {
+            const { zoomOut } = transformComponent;
+           // zoomOut();
+            setScale((prevScale) => prevScale / 1.1);
+        }
+    };
+
+    const handleZoomReset = () => {
+        const { current: transformComponent } = transformComponentRef;
+        if (transformComponent) {
+            const { resetTransform } = transformComponent;
+             resetTransform();
+            setScale(1);
+        }
+        //setScale(1);
+    };
 
     //**********jsx html**********
   return (
@@ -382,7 +416,7 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
             open={open}
         >
-            {checkFormat?
+            {checkFormat &&(
                 <div style={{ height: "100%", width: "100%", "text-align":"center" }}>
                     <span /*style={{ float: 'right' }}*/ className={'topRight'}>
                         {showArrow? <FaArrowLeft className={'cursorPtr'} title={"prev"} size={32} onClick={(e)=> handleNavigationClick(img, 'left')}/>:""}
@@ -398,19 +432,27 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
                     <h2 className="file-name"> {`${config.cloudWatchUrlBase}${img}`.split('/').pop()}
 
                     </h2>
-                    <span>
-                    <FileViewer
-                        key={filePath}
-                        fileType={isImage(img)}
-                        filePath={filePath}
-                        zoom = {150}
-                        errorComponent={() => <div>Sorry, we could not load the document.</div>}
-                    />
 
-                    </span></div>:""
+                    <div className="image-zoom">
+                        <div className="image-container">
+                            <TransformWrapper key={filePath} ref={transformComponentRef} options={{ limitToBounds: false , wheel: false, pinch: false }}>
+                                <TransformComponent>
+                                    <img key={filePath} src={filePath} alt="Zoomable Image" style={{ transform: `scale(${scale})` }} />
+                                </TransformComponent>
+                            </TransformWrapper>
+                        </div>
+                        <div className={'container'}>
+                        <div className="zoom-buttons">
+                            <button className={'cursorPtr img-zoom-in-out'} onClick={handleZoomIn}><BiZoomIn size={40} /></button>
+                            <button className={'cursorPtr img-zoom-in-out'} onClick={handleZoomOut}><BiZoomOut size={40} /></button>
+                            <button className={'cursorPtr img-zoom-in-out'} onClick={handleZoomReset}><TbZoomReset size={40} /></button>
+                        </div>
+                        </div>
+                    </div>
+                    </div>)
             }
             {
-                !checkFormat && checkPdf ? <div style={{ "text-align":"center" }}>
+                !checkFormat && checkPdf && (<div style={{ "text-align":"center" }}>
                     <span className={'topCenter'}><h2 className="file-name"> {`${config.cloudWatchUrlBase}${img}`.split('/').pop()}
 
                     </h2></span>
@@ -425,10 +467,10 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
                             <FaTimes onClick={handleClose} title={'Close'} className={'printIcon downPrint'} size={36}/>
                         {showArrow? <FaArrowRight className={'printIcon cursorPtr'} title={"next"} size={32} onClick={(e)=> handleNavigationClick(img, 'right')}/>:""}
                         </span>
-                     </div>:""
+                     </div>)
             }
             {
-                !checkFormat && checkPdf ? <Worker workerUrl={workerSrc}> <div
+                !checkFormat && checkPdf && (<Worker workerUrl={workerSrc}> <div
                     className="rpv-core__viewer"
                     style={{
                         border: '1px solid rgba(0, 0, 0, 0.3)',
@@ -509,14 +551,14 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
                             defaultScale={1.25}
                         />
                     </div>
-                </div></Worker>
-                    :""
+                </div></Worker>)
+
             }
             {
-                !checkFormat && isImage(img) === 'text'? <TextFileViewer fileUrl={`${config.cloudWatchUrlBase}${img}`} setOpen={setOpen} setImg={setImg} img={img} response={response} setFilePath={setFilePath} showArrow={showArrow}/>:''
+                !checkFormat && isImage(img) === 'text' && (<TextFileViewer fileUrl={`${config.cloudWatchUrlBase}${img}`} setOpen={setOpen} setImg={setImg} img={img} response={response} setFilePath={setFilePath} showArrow={showArrow}/>)
             }
             {
-                !checkFormat && !checkPdf && isImage(img) !== 'text'?
+                !checkFormat && !checkPdf && isImage(img) !== 'text' && (
                     <div style={{ "text-align":"center" , top: "50%", left: "50%"}}>
                         <h2 className="file-name"> {`${config.cloudWatchUrlBase}${img}`.split('/').pop()}
                             <span /*style={{ float: 'right' }}*/>
@@ -531,7 +573,7 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
                         <FaTimes onClick={handleClose} title={'Close'} className={'printIcon downPrint'} size={36}/>
                             {showArrow?<FaArrowRight className={'printIcon cursorPtr'} title={"next"} size={32} onClick={(e)=> handleNavigationClick(img, 'right')}/>:""}
                         </span>
-                        </div>:""
+                        </div>)
             }
         </Backdrop>
 </div>

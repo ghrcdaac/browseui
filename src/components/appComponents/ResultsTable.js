@@ -38,11 +38,6 @@ const parser = new XMLParser();
 const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
   //**********State Variables**********
   const search = useSelector((state) => state.search.value);
-
-  //testing rowData selector
-  const rowDataRedux  = useSelector((state)=>state.rowData.value);
-  // console.log('rowdataredux', rowDataRedux)
-
   const delim = useSelector((state) => state.delim.value);
   const dispatch = useDispatch();
   const [response, setResponse] = useState([]);
@@ -491,28 +486,7 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
         }
         onSortModelChange={handleSortModelChange}
       />
-
-      {/* <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
-        <ViewerComponent
-          handleNavigationClick={handleNavigationClick}
-          addFile={addFile}
-          isExist={isExist}
-          handleClose={handleClose}
-          fileUrl={fileUrl}
-          urls={urls}
-          rowData={rowData}
-          img={img}
-          response={response}
-          filePath={filePath}
-          setProgress={setProgress}
-          showArrowRight={showArrowRight}
-          showArrowLeft={showArrowLeft}
-        />
-      </Backdrop> */}
-      <FileViewer />
+      <FileViewer open={open} setOpen={setOpen}/>
     </div>
   );
 };

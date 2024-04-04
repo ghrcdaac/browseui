@@ -29,6 +29,8 @@ import {
 import { Line } from "rc-progress";
 import { FaTimes } from "react-icons/fa";
 
+import FileViewer from "./FileViewer";
+
 //**********variable and class delarations**********/
 const parser = new XMLParser();
 
@@ -40,7 +42,7 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
   //testing rowData selector
   const rowDataRedux  = useSelector((state)=>state.rowData.value);
   // console.log('rowdataredux', rowDataRedux)
-  
+
   const delim = useSelector((state) => state.delim.value);
   const dispatch = useDispatch();
   const [response, setResponse] = useState([]);
@@ -490,7 +492,7 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
         onSortModelChange={handleSortModelChange}
       />
 
-      <Backdrop
+      {/* <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={open}
       >
@@ -509,7 +511,8 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
           showArrowRight={showArrowRight}
           showArrowLeft={showArrowLeft}
         />
-      </Backdrop>
+      </Backdrop> */}
+      <FileViewer />
     </div>
   );
 };

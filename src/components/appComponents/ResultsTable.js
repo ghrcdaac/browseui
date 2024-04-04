@@ -7,6 +7,7 @@ import { setSelectedList } from "../../feature/selectedListSlice";
 import { setDelim } from "../../feature/delimSlice";
 import { setSearch } from "../../feature/searchSlice";
 import { setCrumb } from "../../feature/crumbSlice";
+import { setRowDataRedux } from "../../feature/rowdata";
 import { isImage } from "../../lib/isImage";
 import { alpha, Backdrop } from "@mui/material";
 import config from "../../config";
@@ -35,6 +36,11 @@ const parser = new XMLParser();
 const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
   //**********State Variables**********
   const search = useSelector((state) => state.search.value);
+
+  //testing rowData selector
+  const rowDataRedux  = useSelector((state)=>state.rowData.value);
+  // console.log('rowdataredux', rowDataRedux)
+  
   const delim = useSelector((state) => state.delim.value);
   const dispatch = useDispatch();
   const [response, setResponse] = useState([]);
@@ -55,6 +61,12 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
   const [rows, setRows] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   //**************Table Layout Functions*************** */
+  
+  // console.log('rowData', rowData)
+  // console.log('rows', rows)
+  
+  // console.log('rowdata -- nonredux', rows)
+  
 
   const convertToList = (data) => {
     // XML parser may return a object on single occurence, this captures the edge case
@@ -129,6 +141,8 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
         [...processedResp].sort((a, b) => a["Key"].localeCompare(b["Key"]))
       );
 
+      dispatch(setRowDataRedux([...processedResp].sort((a, b) => a["Key"].localeCompare(b["Key"]))))
+
       setSearchTerm('')
     } else {
       setResponse(
@@ -142,6 +156,12 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
           .sort((a, b) => a["Key"].localeCompare(b["Key"]))
           .reverse()
       );
+
+      dispatch(setRowDataRedux(
+        [...processedResp]
+          .sort((a, b) => a["Key"].localeCompare(b["Key"]))
+          .reverse()
+      ))
     }
 
     setSkipTrue();
@@ -295,6 +315,7 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
     if (sortedData && sortedData.length > 0) {
       //setResponse(sortedData);
       setRows(sortedData)
+      dispatch(setRowDataRedux(sortedData))
     }
   }, [sortedData]);
 
@@ -373,6 +394,7 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
     );
 
     setRows(filteredRows);
+    dispatch(setRowDataRedux(filteredRows))
   };
 
   granColumns[0].renderHeader = () => (

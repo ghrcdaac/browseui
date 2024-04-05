@@ -367,7 +367,8 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
   const fileUrl = `${config.cloudWatchUrlBase}${img}`;
 
   console.log('img', img)
-
+  console.log('urls', urls)
+  
   let ViewerComponent;
 
   if (checkFormat) {

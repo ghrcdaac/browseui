@@ -13,7 +13,7 @@ import MiscDocsViewer from "./fileViewer/MiscDocsViewer";
 
 import './../../styles/fileviewer.css'
 
-const FileViewer = ({ open, setOpen, urls, addFile, filePath, setProgress }) => {
+const FileViewer = ({ open, setOpen, urls, addFile, filePath, setProgress, img }) => {
 
   const [showArrowLeft, setShowArrowLeft] = useState(true);
   const [showArrowRight, setShowArrowRight] = useState(true);
@@ -22,11 +22,9 @@ const FileViewer = ({ open, setOpen, urls, addFile, filePath, setProgress }) => 
   console.log("open", open)
   console.log('rowdataredux', rowData)
 
-  const img = rowData ? rowData[0].Key : null
-  console.log("img", img)
-  const checkFormat = img && (isImage(img) === "jpeg" || isImage(img) === "png" || isImage(img) === "gif")
-  const checkPdf = img && (isImage(img) === "pdf")
-  const checkText = img && (isImage(img) === "text")
+  const checkFormat = isImage(img) === "jpeg" || isImage(img) === "png" || isImage(img) === "gif"
+  const checkPdf = isImage(img) === "pdf"
+  const checkText = isImage(img) === "text"
 
   let ViewerComponent;
   if (checkFormat) {

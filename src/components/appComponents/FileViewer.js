@@ -1,7 +1,8 @@
 import React from 'react'
+import { useState } from 'react';
 import { Backdrop } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-
+import config from "../../config";
 import { isImage } from "../../lib/isImage";
 import TextFileViewer from "./fileViewer/TextFileViewer";
 import ImageViewer from "./fileViewer/ImageViewer";
@@ -12,9 +13,13 @@ import MiscDocsViewer from "./fileViewer/MiscDocsViewer";
 
 import './../../styles/fileviewer.css'
 
-const FileViewer = ({ open, setOpen }) => {
+const FileViewer = ({ open, setOpen, urls, addFile, filePath, setProgress }) => {
+
+  const [showArrowLeft, setShowArrowLeft] = useState(true);
+  const [showArrowRight, setShowArrowRight] = useState(true);
 
   const rowData  = useSelector((state)=>state.rowData.value);
+  console.log("open", open)
   console.log('rowdataredux', rowData)
 
   const img = rowData ? rowData[0].Key : null
@@ -34,6 +39,15 @@ const FileViewer = ({ open, setOpen }) => {
     ViewerComponent = MiscDocsViewer;
   }
 
+  const fileUrl = `${config.cloudWatchUrlBase}${img}`;
+
+  const isExist = (targetItem) => {
+    if (targetItem)
+      return urls.some(
+        (item) => item.Key === targetItem.Key && item.Size === targetItem.Size
+      );
+  };
+
   const handleNavigationClick = () => {
 
   }
@@ -42,20 +56,13 @@ const FileViewer = ({ open, setOpen }) => {
 
   }
 
-  const addFile = (row) => {
-    // if (!urls.includes(row)) setUrls([...urls, row]);
-    // else {
-    //   const newArray = urls.filter((item) => item !== row);
-    //   setUrls(newArray);
-    // }
-  };
 
   return (
     <Backdrop
       sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
       open={open}
     >
-        {/* <ViewerComponent
+        {open && <ViewerComponent
           handleNavigationClick={handleNavigationClick}
           addFile={addFile}
           isExist={isExist}
@@ -64,12 +71,11 @@ const FileViewer = ({ open, setOpen }) => {
           urls={urls}
           rowData={rowData}
           img={img}
-          response={response}
           filePath={filePath}
           setProgress={setProgress}
           showArrowRight={showArrowRight}
           showArrowLeft={showArrowLeft}
-        /> */}
+        />}
     </Backdrop>
     )
 }

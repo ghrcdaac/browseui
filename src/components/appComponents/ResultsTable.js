@@ -489,7 +489,7 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
         }
         onSortModelChange={handleSortModelChange}
       />
-      <FileViewer open={open} setOpen={setOpen}/>
+      <FileViewer open={open} setOpen={setOpen} urls={urls} addFile={addFile} filePath={filePath} setProgress={setProgress}/>
     </div>
   );
 };

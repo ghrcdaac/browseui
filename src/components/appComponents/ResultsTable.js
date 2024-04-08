@@ -365,9 +365,6 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
   }, []);
 
   const fileUrl = `${config.cloudWatchUrlBase}${img}`;
-
-  console.log('img', img)
-  console.log('urls', urls)
   
   let ViewerComponent;
 
@@ -489,7 +486,25 @@ const ResultsTable = ({ skip, setSkipTrue, setSkipFalse }) => {
         }
         onSortModelChange={handleSortModelChange}
       />
-      <FileViewer open={open} setOpen={setOpen} urls={urls} addFile={addFile} filePath={filePath} setProgress={setProgress} img={img}/>
+      <FileViewer 
+        open={open} 
+        setOpen={setOpen} 
+        urls={urls} 
+        addFile={addFile} 
+        filePath={filePath} 
+        setProgress={setProgress} 
+        img={img}
+        response={response}
+        setFilePath={setFilePath}
+        setRowData={setRowData}
+        setImg={setImg}
+        updateBrowserURL={updateBrowserURL}
+        setScale={setScale}
+        setShowArrowLeft={setShowArrowLeft}
+        setShowArrowRight={setShowArrowRight}
+        showArrowLeft={showArrowLeft}
+        showArrowRight={showArrowRight}
+      />
     </div>
   );
 };

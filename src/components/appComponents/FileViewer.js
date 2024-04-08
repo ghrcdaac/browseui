@@ -13,14 +13,28 @@ import MiscDocsViewer from "./fileViewer/MiscDocsViewer";
 
 import './../../styles/fileviewer.css'
 
-const FileViewer = ({ open, setOpen, urls, addFile, filePath, setProgress, img }) => {
-
-  const [showArrowLeft, setShowArrowLeft] = useState(true);
-  const [showArrowRight, setShowArrowRight] = useState(true);
+const FileViewer = ({ open, 
+  setOpen, 
+  urls, 
+  addFile, 
+  filePath, 
+  setProgress, 
+  img,
+  response,
+  setFilePath,
+  setRowData,
+  setImg,
+  updateBrowserURL,
+  setScale,
+  showArrowRight,
+  showArrowLeft,
+  setShowArrowLeft,
+  setShowArrowRight
+  }) => {
 
   const rowData  = useSelector((state)=>state.rowData.value);
-  console.log("open", open)
-  console.log('rowdataredux', rowData)
+  // console.log("open", open)
+  // console.log('rowdataredux', rowData)
 
   const checkFormat = isImage(img) === "jpeg" || isImage(img) === "png" || isImage(img) === "gif"
   const checkPdf = isImage(img) === "pdf"
@@ -47,22 +61,48 @@ const FileViewer = ({ open, setOpen, urls, addFile, filePath, setProgress, img }
   };
 
   const handleNavigationClick = (row, direction) => {
+    const currentImageIndex = response.findIndex(
+      (row2) => row2.Key === row.Key
+    );
+    const isLeftDirection = direction === "left";
+    const isRightDirection = direction === "right";
+    const isLeftEnd = currentImageIndex === 1 && isLeftDirection;
+    const isRightEnd =
+      currentImageIndex === response.length - 2 && isRightDirection;
 
-  }
+    setShowArrowLeft(!isLeftEnd);
+    setShowArrowRight(!isRightEnd);
 
-  const handleClose = () => {
-    // Get the current URL
-    var currentURL = window.location.href;
-    currentURL = currentURL.split('#')[1]
-    // Find the last occurrence of "/" in the URL
-    var lastSlashIndex = currentURL.lastIndexOf("/");
-    // Remove everything after the last "/"
-    var modifiedURL = currentURL.substring(0, lastSlashIndex);
-    //update the url
-    var newUrl = "browseui/#" + modifiedURL;
-    window.history.pushState({ path: newUrl }, "", newUrl);
+    if (isLeftDirection && currentImageIndex > 0) {
+      const id = response[currentImageIndex - 1].Key;
+      setFilePath(`${config.cloudWatchUrlBase}${id}`);
+      setRowData(response[currentImageIndex - 1]);
+      setImg(id);
+      updateBrowserURL(id, true);
+      setOpen(true);
+    } else if (isRightDirection && response.length > currentImageIndex + 1) {
+      const id = response[currentImageIndex + 1].Key;
+      setFilePath(`${config.cloudWatchUrlBase}${id}`);
+      setRowData(response[currentImageIndex + 1]);
+      setImg(id);
+      updateBrowserURL(id, true);
+      setOpen(true);
+    }
 
-    setOpen(false)
+    //To set the next image to original size
+    setScale(1);
+  };
+
+  const handleClose = (rowData) => {
+    // console.log(rowData)
+    let img = rowData[0].Key;
+    //To set the next image to original size
+    setScale(1);
+    console.log(img)
+    const desiredPath = img.substring(0, img.lastIndexOf("/") + 1);
+    updateBrowserURL(desiredPath);
+    setOpen(false);
+    setImg("");
   }
 
 

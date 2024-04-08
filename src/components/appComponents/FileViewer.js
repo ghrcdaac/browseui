@@ -46,12 +46,23 @@ const FileViewer = ({ open, setOpen, urls, addFile, filePath, setProgress, img }
       );
   };
 
-  const handleNavigationClick = () => {
+  const handleNavigationClick = (row, direction) => {
 
   }
 
   const handleClose = () => {
+    // Get the current URL
+    var currentURL = window.location.href;
+    currentURL = currentURL.split('#')[1]
+    // Find the last occurrence of "/" in the URL
+    var lastSlashIndex = currentURL.lastIndexOf("/");
+    // Remove everything after the last "/"
+    var modifiedURL = currentURL.substring(0, lastSlashIndex);
+    //update the url
+    var newUrl = "browseui/#" + modifiedURL;
+    window.history.pushState({ path: newUrl }, "", newUrl);
 
+    setOpen(false)
   }
 
 

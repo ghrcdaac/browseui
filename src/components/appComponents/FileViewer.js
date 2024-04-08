@@ -61,6 +61,7 @@ const FileViewer = ({ open,
   };
 
   const handleNavigationClick = (row, direction) => {
+    console.log(row, direction)
     const currentImageIndex = response.findIndex(
       (row2) => row2.Key === row.Key
     );
@@ -94,7 +95,6 @@ const FileViewer = ({ open,
   };
 
   const handleClose = (rowData) => {
-    // console.log(rowData)
     let img = rowData[0].Key;
     //To set the next image to original size
     setScale(1);

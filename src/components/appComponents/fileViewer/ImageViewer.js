@@ -146,7 +146,7 @@ const ImageViewer = ({
                 key={filePath}
                 src={filePath}
                 alt={"Zoomable Image" + filePath}
-                style={{ transform: `scale(${scale})` }}
+                style={{ transform: `scale(${scale})`, height:`${scale * 40}rem`, width:`${scale * 40}rem` }}
               />
             </TransformComponent>
           </TransformWrapper>

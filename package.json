@@ -15,7 +15,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^14.3.0",
-    "fast-xml-parser": "^4.0.9",
+    "fast-xml-parser": "^4.3.6",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "pdfjs-dist": "^3.5.141",
